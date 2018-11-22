@@ -1,4 +1,4 @@
-# particle
+# vue-particle
 
 ## Project setup
 ```

@@ -1,6 +1,6 @@
 {
-  "name": "particle",
-  "short_name": "particle",
+  "name": "vue-particle",
+  "short_name": "vue-particle",
   "icons": [
     {
       "src": "./img/icons/android-chrome-192x192.png",
