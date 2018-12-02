@@ -44,6 +44,7 @@ export default {
       } else {
         controlCamera = currCamera
       }
+      currCamera.updateProjectionMatrix()
     })
     this.config.planes.forEach(element => {
       const plane = new THREE.Plane(new THREE.Vector3(...element.geo), element.distance)
@@ -159,6 +160,15 @@ export default {
             this.$emit('cast', pt)
             console.log(`emit ${pt.x}, ${pt.y}, ${pt.z}`)
             this.drawRaycastLineIndirection(pt)
+
+            const angle = this.camera.getWorldDirection().angleTo(pt)
+            const degree = angle / (Math.PI / 90)
+            this.$emit('obj', {
+              ...intersects[0].object.position,
+              mouseX: event.offsetX,
+              mouseY: event.offsetY,
+              degree: degree
+            })
           }
         }
       }
