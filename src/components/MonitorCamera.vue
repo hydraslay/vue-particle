@@ -126,7 +126,7 @@ export default {
       // left button
       this.rotating = event.button === 0
       if (this.rotating) {
-        this.originRotate = { x: this.camera.rotation.x, y: this.camera.rotation.y }
+        this.originRotate = { x: this.camera.rotation.x, y: this.camera.rotation.y, z: this.camera.rotation.z }
         this.originXY = { x: event.clientX, y: event.clientY }
         // console.log('r:' + this.originRotate.x + ' , ' + this.originRotate.y)
         // console.log('m:' + this.originXY.x + ' , ' + this.originXY.y)
@@ -146,10 +146,15 @@ export default {
           // calculate objects intersecting the picking ray
           var intersects = this.raycaster.intersectObjects(this.objects)
 
-          // for (var i = 0; i < intersects.length; i++) {
-          //   intersects[ i ].object.material.color.set(0xff0000)
-          // }
+          this.objects.forEach(obj => {
+            if (obj.prevColor) {
+              obj.material.color.set(obj.prevColor)
+            } else {
+              obj.prevColor = obj.material.color.getHex()
+            }
+          })
           if (intersects && intersects.length > 0) {
+            intersects[0].object.material.color.set(0xff0000)
             const pt = intersects[0].point.normalize()
             this.$emit('cast', pt)
             console.log(`emit ${pt.x}, ${pt.y}, ${pt.z}`)
@@ -164,8 +169,12 @@ export default {
         // console.log(event.clientX + ' , ' + event.clientY)
 
         event.preventDefault()
-        this.camera.rotation.y = this.originRotate.x - (event.clientX - this.originXY.x) * this.rotate
-        this.camera.rotation.x = this.originRotate.y - (event.clientY - this.originXY.y) * this.rotate
+        if (this.config.yRotate) {
+          this.camera.rotation.y = this.originRotate.y - (event.clientX - this.originXY.x) * this.rotate
+        } else {
+          this.camera.rotation.y = this.originRotate.y - (event.clientX - this.originXY.x) * this.rotate
+          this.camera.rotation.x = this.originRotate.x - (event.clientY - this.originXY.y) * this.rotate
+        }
         this.camera.updateMatrix()
         if (this.config.emitControl) {
           this.$emit('rotate', {
