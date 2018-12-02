@@ -1,10 +1,10 @@
 <template>
   <div class="home">
-    <!-- <div style="text-align:left;">
+    <div style="text-align:left;">
       <p>
         <span>Click on the green/blue/orange block to see calc result, or drag to rotate the camera.</span>
       </p>
-    </div> -->
+    </div>
     <MonitorCamera :config="monitorConfig" @rotate="onCameraRotated" @cast="onRayCasted" @obj="gotObject" />
     <MonitorCamera :config="observerConfig" :camera-rotaion="syncRotation" :ray-casting="castRay" />
     <div style="text-align:left;">
