@@ -40,15 +40,11 @@ export default {
     }
     const levelColor = 0x00ff00
     const commonObjects = [groundCube]
-    const startX = -3
-    const startY = 2
-    const cubeSize = 0.1
+    const cubeSize = 2
     const cubeHeight = 4.5
-    this.addObjects(commonObjects, cubeSize, startX, startY, cubeHeight, levelColor)
-
-    this.addObjects(commonObjects, cubeSize, 1, 1.5, 4, 0x00f0ff)
-
-    this.addObjects(commonObjects, cubeSize, -0.5, 0.5, 3, 0xf06060)
+    commonObjects.push(this.createObject(cubeSize, -2, 2, cubeHeight, levelColor))
+    commonObjects.push(this.createObject(cubeSize, 1, 1.5, 4, 0x00f0ff))
+    commonObjects.push(this.createObject(cubeSize, -0.5, 0.5, 3, 0xf06060))
 
     const monitorConfig = {
       size: commonSize,
@@ -100,15 +96,11 @@ export default {
     gotObject (obj) {
       this.objPosition = obj
     },
-    addObjects (commonObjects, cubeSize, startX, startY, cubeHeight, levelColor) {
-      for (let row = 0; row < 10; row++) {
-        for (let col = 0; col < 10; col++) {
-          commonObjects.push({
-            geo: [cubeSize, cubeSize, 0.01],
-            color: levelColor,
-            position: { x: startX + row * cubeSize, y: startY + col * cubeSize, z: -cubeHeight }
-          })
-        }
+    createObject (cubeSize, startX, startY, cubeHeight, levelColor) {
+      return {
+        geo: [cubeSize, cubeSize, 0.01],
+        color: levelColor,
+        position: { x: startX, y: startY, z: -cubeHeight }
       }
     }
   }

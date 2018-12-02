@@ -156,15 +156,16 @@ export default {
           })
           if (intersects && intersects.length > 0) {
             intersects[0].object.material.color.set(0xff0000)
-            const pt = intersects[0].point.normalize()
-            this.$emit('cast', pt)
-            console.log(`emit ${pt.x}, ${pt.y}, ${pt.z}`)
-            this.drawRaycastLineIndirection(pt)
+            const pt = intersects[0].point
+            const ptNor = pt.normalize()
+            this.$emit('cast', ptNor)
+            // console.log(`emit ${pt.x}, ${pt.y}, ${pt.z}`)
+            this.drawRaycastLineIndirection(ptNor)
 
-            const angle = this.camera.getWorldDirection().angleTo(pt)
+            const angle = this.camera.getWorldDirection().angleTo(ptNor)
             const degree = angle / (Math.PI / 90)
             this.$emit('obj', {
-              ...intersects[0].object.position,
+              ...pt,
               mouseX: event.offsetX,
               mouseY: event.offsetY,
               degree: degree
