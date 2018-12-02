@@ -128,14 +128,14 @@ export default {
       this.rotating = event.button === 0
       if (this.rotating) {
         this.originRotate = { x: this.camera.rotation.x, y: this.camera.rotation.y, z: this.camera.rotation.z }
-        this.originXY = { x: event.clientX, y: event.clientY }
+        this.originXY = { x: event.offsetX, y: event.offsetY }
         // console.log('r:' + this.originRotate.x + ' , ' + this.originRotate.y)
         // console.log('m:' + this.originXY.x + ' , ' + this.originXY.y)
       }
     },
     onMouseUp (event) {
       this.rotating = false
-      if (!this.hasMoueMoved) {
+      if (!this.hasMoueMoved || (event.offsetX === this.originXY.x && event.offsetY === this.originXY.y)) {
         // change ray direction
         if (this.config.rayCasting) {
           this.mouse.x = (event.offsetX / this.config.size.w) * 2 - 1
@@ -176,14 +176,13 @@ export default {
     onMouseMove (event) {
       if (this.rotating) {
         this.hasMoueMoved = true
-        // console.log(event.clientX + ' , ' + event.clientY)
 
         event.preventDefault()
         if (this.config.yRotate) {
-          this.camera.rotation.y = this.originRotate.y - (event.clientX - this.originXY.x) * this.rotate
+          this.camera.rotation.y = this.originRotate.y - (event.offsetX - this.originXY.x) * this.rotate
         } else {
-          this.camera.rotation.y = this.originRotate.y - (event.clientX - this.originXY.x) * this.rotate
-          this.camera.rotation.x = this.originRotate.x - (event.clientY - this.originXY.y) * this.rotate
+          this.camera.rotation.y = this.originRotate.y - (event.offsetX - this.originXY.x) * this.rotate
+          this.camera.rotation.x = this.originRotate.x - (event.offsetY - this.originXY.y) * this.rotate
         }
         this.camera.updateMatrix()
         if (this.config.emitControl) {
