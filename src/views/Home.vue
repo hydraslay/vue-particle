@@ -1,7 +1,7 @@
 <template>
   <div class="home">
-    <MonitorCamera :config="monitorConfig" @rotate="onCameraRotated" />
-    <MonitorCamera :config="observerConfig" :camera-rotaion="syncRotation" />
+    <MonitorCamera :config="monitorConfig" @rotate="onCameraRotated" @cast="onRayCasted" />
+    <MonitorCamera :config="observerConfig" :camera-rotaion="syncRotation" :ray-casting="castRay" />
   </div>
 </template>
 
@@ -14,20 +14,37 @@ export default {
     MonitorCamera
   },
   data () {
-    const topCamOption = [-20, 20, -20, 20, 0, 1000]
-    const groundPlain = {
-      geo: [10, 10, 0.2],
-      distance: 6
-    }
+    const topCamOption = [60, 4 / 3, 1, 7]
+    // const groundPlain = {
+    //   geo: [0, 0, 1],
+    //   distance: 6
+    // }
+    const commonSize = { w: 640, h: 480 }
+    const commonObjects = [
+      {
+        geo: [1, 1, 1],
+        color: 0x00ff00,
+        position: { x: 1, y: 1, z: -5 }
+      },
+      {
+        geo: [10, 10, 0.1],
+        color: 0x00ffff,
+        position: { x: 1, y: 1, z: -6 }
+      }
+    ]
     const monitorConfig = {
+      size: commonSize,
+      rayCasting: true,
       cameraUseIndex: 0,
       cameras: [
         { option: topCamOption }
       ],
-      planes: [groundPlain],
+      planes: [],
+      objects: commonObjects,
       emitControl: true
     }
     const observerConfig = {
+      size: commonSize,
       cameraUseIndex: 1,
       cameras: [
         {
@@ -36,22 +53,29 @@ export default {
           syncControl: true
         },
         {
-          option: [-20, 20, -20, 20, 0, 1000],
-          position: { x: 20, y: 1, z: 0 },
-          lookAt: [0, 0, 0]
+          option: [100, 4 / 3, 1, 1000],
+          position: { x: 10, y: 1, z: -5 },
+          // lookAt: [0, 0, 0],
+          rotation: { x: Math.PI / 2, y: Math.PI / 2, z: 0 }
         }
       ],
-      planes: [groundPlain]
+      planes: [],
+      objects: commonObjects
     }
     return {
       monitorConfig: monitorConfig,
       observerConfig: observerConfig,
-      syncRotation: { x: 0, y: 0 }
+      syncRotation: { x: 0, y: 0 },
+      castRay: { x: 0, y: 0, z: 0 }
     }
   },
   methods: {
     onCameraRotated (rot) {
       this.syncRotation = rot
+    },
+    onRayCasted (pt) {
+      console.log(`got ${pt.x}, ${pt.y}, ${pt.z}`)
+      this.castRay = pt
     }
   }
 }

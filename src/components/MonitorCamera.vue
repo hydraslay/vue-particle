@@ -11,19 +11,16 @@ export default {
   name: 'MonitorCamera',
   props: {
     config: { type: Object, default: () => { return null } },
-    cameraRotaion: { type: Object, default: () => { return null } }
+    cameraRotaion: { type: Object, default: () => { return null } },
+    rayCasting: { type: Object, default: () => { return null } }
   },
   data () {
-    console.log('data')
-    // === scene ===
     const scene = new THREE.Scene()
-    // === renderer ===
     const renderer = new THREE.WebGLRenderer()
-    renderer.setSize(640, 480)
-    // === camera ===
+    renderer.setSize(this.config.size.w, this.config.size.h)
     let useCamera, controlCamera, controlCameraHelper
     this.config.cameras.forEach((element, index) => {
-      const currCamera = new THREE.OrthographicCamera(...element.option)
+      const currCamera = new THREE.PerspectiveCamera(...element.option)
       if (element.helper) {
         const camhelper = new THREE.CameraHelper(currCamera)
         scene.add(camhelper)
@@ -37,6 +34,11 @@ export default {
         currCamera.position.y = element.position.y
         currCamera.position.z = element.position.z
       }
+      if (element.rotation) {
+        currCamera.rotation.x = element.rotation.x
+        currCamera.rotation.y = element.rotation.y
+        currCamera.rotation.z = element.rotation.z
+      }
       if (index === this.config.cameraUseIndex) {
         useCamera = currCamera
       } else {
@@ -48,6 +50,12 @@ export default {
       scene.add(plane)
       const helper = new THREE.PlaneHelper(plane, 10, 0xffff00)
       scene.add(helper)
+    })
+
+    const objects = this.config.objects.map(element => {
+      const newObj = this.createObject(element.geo, element.color, element.position)
+      scene.add(newObj)
+      return newObj
     })
     // === light ===
     const hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 1)
@@ -61,32 +69,24 @@ export default {
       renderer: renderer,
       camera: useCamera,
       light: hemiLight,
-      rotate: Math.PI / 90,
+      rotate: (Math.PI / 90) * 0.2,
       rotating: false,
+      hasMoueMoved: false,
       originRotate: null,
       originXY: null,
       controlCamera: controlCamera,
-      controlCameraHelper: controlCameraHelper
+      controlCameraHelper: controlCameraHelper,
+      raycaster: new THREE.Raycaster(),
+      mouse: new THREE.Vector2(),
+      intersectPt: null,
+      rayLine: null,
+      objects: objects
     }
   },
   created () {
-    console.log('created')
     this.scene.add(new THREE.AxesHelper(5))
-    this.drawRaycastLine({
-      ray: {
-        origin: { x: 1, y: 1, z: 1 },
-        direction: { x: 1.5, y: 1.5, z: 1 }
-      }
-    })
     this.scene.add(this.camera)
-    this.scene.add(this.light)
-    this.scene.add(this.cube)
-
-    var cube2 = this.newCube()
-    cube2.position.x = -1
-    cube2.position.y = -1
-    cube2.position.z = -1
-    this.scene.add(cube2)
+    // this.scene.add(this.light)
   },
   mounted () {
     this.$refs.stage.appendChild(this.renderer.domElement)
@@ -95,36 +95,38 @@ export default {
   watch: {
     'cameraRotaion': function (newVal) {
       if (newVal) {
-        console.log('sync:' + this.cameraRotaion.x + ' , ' + this.cameraRotaion.y)
+        // console.log('sync:' + this.cameraRotaion.x + ' , ' + this.cameraRotaion.y)
         this.controlCamera.rotation.x = this.cameraRotaion.x
         this.controlCamera.rotation.y = this.cameraRotaion.y
         this.controlCamera.updateMatrixWorld()
-        // this.controlCamera.updateMatrix()
-        // this.controlCamera.updateProjectionMatrix()
         this.controlCameraHelper.update()
         this.controlCameraHelper.visible = true
       }
+    },
+    'rayCasting': function (newVal) {
+      this.drawRaycastLineIndirection(newVal)
     }
   },
   methods: {
-    newCube () {
-      const geometry = new THREE.BoxGeometry(1, 1, 1)
-      const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 })
-      return new THREE.Mesh(geometry, material)
+    createObject (geo, color, position) {
+      const geometry = new THREE.BoxGeometry(...geo)
+      const material = new THREE.MeshStandardMaterial({ color: color })
+      const cube = new THREE.Mesh(geometry, material)
+      cube.position.x = position.x
+      cube.position.y = position.y
+      cube.position.z = position.z
+      return cube
     },
     animate () {
       requestAnimationFrame(this.animate)
-      // this.cube.rotation.y += this.rotate
-      // this.camera.rotation.z += this.rotate
-      // var delta = this.clock.getDelta()
-      // this.controls.update()
       this.renderer.render(this.scene, this.camera)
     },
     onMouseDown (event) {
+      this.hasMoueMoved = false
       // left button
       this.rotating = event.button === 0
       if (this.rotating) {
-        this.originRotate = { x: this.camera.rotation.x || 0, y: this.camera.rotation.y || 0 }
+        this.originRotate = { x: this.camera.rotation.x, y: this.camera.rotation.y }
         this.originXY = { x: event.clientX, y: event.clientY }
         // console.log('r:' + this.originRotate.x + ' , ' + this.originRotate.y)
         // console.log('m:' + this.originXY.x + ' , ' + this.originXY.y)
@@ -132,9 +134,33 @@ export default {
     },
     onMouseUp (event) {
       this.rotating = false
+      if (!this.hasMoueMoved) {
+        // change ray direction
+        if (this.config.rayCasting) {
+          this.mouse.x = (event.offsetX / this.config.size.w) * 2 - 1
+          this.mouse.y = -(event.offsetY / this.config.size.h) * 2 + 1
+
+          // update the picking ray with the camera and mouse position
+          this.raycaster.setFromCamera(this.mouse, this.camera)
+
+          // calculate objects intersecting the picking ray
+          var intersects = this.raycaster.intersectObjects(this.objects)
+
+          // for (var i = 0; i < intersects.length; i++) {
+          //   intersects[ i ].object.material.color.set(0xff0000)
+          // }
+          if (intersects && intersects.length > 0) {
+            const pt = intersects[0].point.normalize()
+            this.$emit('cast', pt)
+            console.log(`emit ${pt.x}, ${pt.y}, ${pt.z}`)
+            this.drawRaycastLineIndirection(pt)
+          }
+        }
+      }
     },
     onMouseMove (event) {
       if (this.rotating) {
+        this.hasMoueMoved = true
         // console.log(event.clientX + ' , ' + event.clientY)
 
         event.preventDefault()
@@ -148,6 +174,14 @@ export default {
           })
         }
       }
+    },
+    drawRaycastLineIndirection (pt) {
+      this.drawRaycastLine({
+        ray: {
+          origin: { x: 0, y: 0, z: 0 },
+          direction: pt
+        }
+      })
     },
     drawRaycastLine (raycaster) {
       let material = new THREE.LineBasicMaterial({
@@ -175,9 +209,11 @@ export default {
       geometry.vertices.push(startVec)
       geometry.vertices.push(midVec)
       geometry.vertices.push(endVec)
-
-      let line = new THREE.Line(geometry, material)
-      this.scene.add(line)
+      if (this.rayLine) {
+        this.scene.remove(this.rayLine)
+      }
+      this.rayLine = new THREE.Line(geometry, material)
+      this.scene.add(this.rayLine)
     }
   },
   computed: {
