@@ -85,7 +85,7 @@ export default {
     }
   },
   created () {
-    this.scene.add(new THREE.AxesHelper(5))
+    // this.scene.add(new THREE.AxesHelper(5))
     this.scene.add(this.camera)
     // this.scene.add(this.light)
   },
@@ -157,6 +157,11 @@ export default {
           if (intersects && intersects.length > 0) {
             intersects[0].object.material.color.set(0xff0000)
             const pt = intersects[0].point
+            const originPt = {
+              x: pt.x,
+              y: pt.y,
+              z: pt.z
+            }
             const ptNor = pt.normalize()
             this.$emit('cast', ptNor)
             // console.log(`emit ${pt.x}, ${pt.y}, ${pt.z}`)
@@ -165,7 +170,7 @@ export default {
             const angle = this.camera.getWorldDirection().angleTo(ptNor)
             const degree = angle / (Math.PI / 90)
             this.$emit('obj', {
-              ...pt,
+              ...originPt,
               mouseX: event.offsetX,
               mouseY: event.offsetY,
               degree: degree
@@ -242,8 +247,9 @@ export default {
 
 <style>
 .stage{
-  width: 640px;
+  width: 600px;
   height: 480px;
   display: inline-block;
+  margin-left: 2px;
 }
 </style>

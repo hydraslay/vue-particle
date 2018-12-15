@@ -9,11 +9,19 @@
     <MonitorCamera :config="observerConfig" :camera-rotaion="syncRotation" :ray-casting="castRay" />
     <div style="text-align:left;">
       <p>
-        <span>Angle:{{ Math.round(objPosition.degree * 100) / 100 }}</span>
-        <span> + Height:{{ Math.round(-objPosition.z * 100) / 100 }}</span>
+        <span>第二角度:{{ Math.round(objPosition.degree * 100) / 100 }}</span>
+        <span> + タグ高さ:{{ Math.round((6 + objPosition.z) * 100) / 100 }}</span>
         <span> ----> </span>
-        <span>Ground Coordinate: ({{ Math.round(objPosition.x * 1000) / 1000 }}, {{ Math.round(objPosition.y * 1000) / 1000 }})</span>
+        <span>平面座標: ({{ Math.round(objPosition.x * 100) / 100 }}, {{ Math.round(objPosition.y * 100) / 100 }})</span>
       </p>
+    </div>
+    <div style="position:absolute;left:0px;bottom:0px;">
+      <div>
+        <a href="mailto:xvkai2010@gmail.com">xvkai2010@gmail.com</a>
+      </div>
+      <div>
+        <a href="mailto:xukai@lzt-ngy.co.jp">xukai@lzt-ngy.co.jp</a>
+      </div>
     </div>
   </div>
 </template>
@@ -32,7 +40,7 @@ export default {
     //   geo: [0, 0, 1],
     //   distance: 6
     // }
-    const commonSize = { w: 640, h: 480 }
+    const commonSize = { w: 600, h: 480 }
     const groundCube = {
       geo: [10, 10, 0.1],
       color: 0xeeeeee,
