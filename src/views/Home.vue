@@ -98,7 +98,7 @@ export default {
       this.syncRotation = rot
     },
     onRayCasted (pt) {
-      console.log(`got ${pt.x}, ${pt.y}, ${pt.z}`)
+      // console.log(`got ${pt.x}, ${pt.y}, ${pt.z}`)
       this.castRay = pt
     },
     gotObject (obj) {
