@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 importScripts(
-  "/precache-manifest.a3664028048b52007f74dfe19761058e.js"
+  "/precache-manifest.5e99b5619661baf28decdd0290a1c17b.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "vue-particle"});
