@@ -2,6 +2,9 @@
   <div class="home">
     <div style="text-align:left;">
       <p>
+        <span>This is demo about how to measure the angle and coordinate of specific point.The point is on a surface of an object and casted from a camera view.</span>
+      </p>
+      <p>
         <span>Click on the green/blue/orange block to see calc result, or drag to rotate the camera.</span>
       </p>
     </div>
@@ -9,10 +12,10 @@
     <MonitorCamera :config="observerConfig" :camera-rotaion="syncRotation" :ray-casting="castRay" />
     <div style="text-align:left;">
       <p>
-        <span>第二角度:{{ Math.round(objPosition.degree * 100) / 100 }}</span>
-        <span> + タグ高さ:{{ Math.round((6 + objPosition.z) * 100) / 100 }}</span>
+        <span>Angle from center of camera view: {{ Math.round(objPosition.degree * 100) / 100 }}</span>
+        <span>, Height of target(fixed by object):{{ Math.round((6 + objPosition.z) * 100) / 100 }}</span>
         <span> ----> </span>
-        <span>平面座標: ({{ Math.round(objPosition.x * 100) / 100 }}, {{ Math.round(objPosition.y * 100) / 100 }})</span>
+        <span>Coordinate: ({{ Math.round(objPosition.x * 100) / 100 }}, {{ Math.round(objPosition.y * 100) / 100 }})</span>
       </p>
     </div>
     <div style="position:absolute;left:0px;bottom:0px;">
@@ -20,7 +23,7 @@
         <a href="mailto:xvkai2010@gmail.com">xvkai2010@gmail.com</a>
       </div>
       <div>
-        <a href="mailto:xukai@lzt-ngy.co.jp">xukai@lzt-ngy.co.jp</a>
+        <a href="mailto:xukai@ai2-jp.com">xukai@ai2-jp.com</a>
       </div>
     </div>
   </div>
