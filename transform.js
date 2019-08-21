@@ -5,11 +5,11 @@ console.log(`transform ${distFile} ...`);
 fs.readFile(distFile, (err, data) => {
     let newFile = data.toString();
     [
-        {src: '/js/', dest: '/doc/js/'},
-        {src: '/css/', dest: '/doc/css/'},
-        {src: '/img/', dest: '/doc/img/'},
-        {src: '/favicon.ico', dest: '/doc/favicon.ico'},
-        {src: '/manifest.json', dest: '/doc/manifest.json'},
+        {src: '/js/', dest: '/docs/js/'},
+        {src: '/css/', dest: '/docs/css/'},
+        {src: '/img/', dest: '/docs/img/'},
+        {src: '/favicon.ico', dest: '/docs/favicon.ico'},
+        {src: '/manifest.json', dest: '/docs/manifest.json'},
     ].forEach(item => {
         newFile = newFile.split(item.src).join(item.dest)
     })
