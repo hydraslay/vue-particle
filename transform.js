@@ -5,9 +5,10 @@ console.log(`transform ${distFile} ...`);
 fs.readFile(distFile, (err, data) => {
     let newFile = data.toString();
     [
-        {src: '/js/', dest: '/dist/js/'},
-        {src: '/css/', dest: '/dist/css/'},
-        {src: '/img/', dest: '/dist/img/'},
+        {src: '/js/', dest: 'https://raw.githubusercontent.com/hydraslay/vue-particle/master/dist/js/'},
+        {src: '/css/', dest: 'https://raw.githubusercontent.com/hydraslay/vue-particle/master/dist/css/'},
+        {src: '/img/', dest: 'https://raw.githubusercontent.com/hydraslay/vue-particle/master/dist/img/'},
+        {src: '/favicon.ico', dest: 'https://raw.githubusercontent.com/hydraslay/vue-particle/master/dist/favicon.ico'},
     ].forEach(item => {
         newFile = newFile.split(item.src).join(item.dest)
     })
