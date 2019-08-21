@@ -9,6 +9,7 @@ fs.readFile(distFile, (err, data) => {
         {src: '/css/', dest: 'https://raw.githubusercontent.com/hydraslay/vue-particle/master/dist/css/'},
         {src: '/img/', dest: 'https://raw.githubusercontent.com/hydraslay/vue-particle/master/dist/img/'},
         {src: '/favicon.ico', dest: 'https://raw.githubusercontent.com/hydraslay/vue-particle/master/dist/favicon.ico'},
+        {src: '/manifest.json', dest: 'https://raw.githubusercontent.com/hydraslay/vue-particle/master/dist/manifest.json'},
     ].forEach(item => {
         newFile = newFile.split(item.src).join(item.dest)
     })
